@@ -30,7 +30,7 @@ import services.RedisDataServiceImpl;
 public class FieldSensor {
     private String id;
     private SensorData sensorData;
-    private ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private ExecutorService executorService = Executors.newFixedThreadPool(10);
     private boolean isRunning = Boolean.TRUE;
     private boolean isSprinklerRunning = Boolean.FALSE;
     private RedisDataService redisDataService;
@@ -47,7 +47,7 @@ public class FieldSensor {
         executorService.execute(new PhChanger());
         executorService.execute(new Sender());
         executorService.execute(new Sprinkler());
-        executorService.execute(new SensorReceiver("localhost:9092", "aggre", "test"));
+        executorService.execute(new SensorReceiver("localhost:9092", "aggre", id));
     }
 
     public String getId() {
@@ -86,7 +86,7 @@ public class FieldSensor {
             while (isRunning) {
                 if (sensorData.getTemparature() > 25 && sensorData.getMoisture() > 0) {
                     float delta = (float) (sensorData.getTemparature() - 25.0);
-                    sensorData.setMoisture((float) (sensorData.getMoisture() - delta*0.01));
+                    sensorData.setMoisture((float) (sensorData.getMoisture() - delta*0.1));
                 }
                 try {
                     Thread.sleep(1000);
@@ -136,7 +136,7 @@ public class FieldSensor {
         public void run() {
             while (isRunning) {
                 try {
-                    kafkaProducer.send(new ProducerRecord("test", objectMapper.writeValueAsString(sensorData)));
+                    kafkaProducer.send(new ProducerRecord(id, objectMapper.writeValueAsString(sensorData)));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }

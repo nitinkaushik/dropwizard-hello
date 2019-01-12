@@ -33,9 +33,7 @@ public class RedisDaoImpl {
 
   public List<Map> getMaps(){
     List<Map> maps = new ArrayList<>();
-    Integer i =0;
-    //TODO : move this to pipeline to reduce network calls
-    for(i=0;i<16;i++){
+    for(Integer i=1;i<=16;i++){
       maps.add(jedis.hgetAll(i.toString()));
     }
     return maps;
