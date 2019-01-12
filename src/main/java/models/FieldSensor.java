@@ -208,8 +208,10 @@ public class FieldSensor {
 
         @Override
         public void run() {
-            while (isSprinklerRunning) {
-                sensorData.setMoisture((float) (sensorData.getMoisture() + 1));
+            while (true) {
+                if (isSprinklerRunning && sensorData.getMoisture() < 100.0) {
+                    sensorData.setMoisture((float) (sensorData.getMoisture() + 0.5));
+                }
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

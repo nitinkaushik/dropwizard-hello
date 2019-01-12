@@ -30,15 +30,15 @@ public class SensorData {
         return ph;
     }
 
-    public void setTemparature(float temparature) {
+    public synchronized void setTemparature(float temparature) {
         this.temparature = temparature;
     }
 
-    public void setMoisture(float moisture) {
+    public synchronized void setMoisture(float moisture) {
         this.moisture = moisture;
     }
 
-    public void setPh(float ph) {
+    public synchronized void setPh(float ph) {
         this.ph = ph;
     }
 }
