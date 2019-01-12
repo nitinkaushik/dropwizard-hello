@@ -22,7 +22,7 @@ public class RedisDaoImpl {
   }
 
   public Map getMap(String key){
-    return jedis.hgetAll(key)
+    return jedis.hgetAll(key);
   }
 
 }
