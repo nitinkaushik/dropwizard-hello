@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import constants.SensorType;
+import dao.RedisDaoImpl;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -21,6 +23,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import sensorRepo.SensorRepo;
+import services.RedisDataService;
+import services.RedisDataServiceImpl;
 
 public class FieldSensor {
     private String id;
@@ -28,11 +33,15 @@ public class FieldSensor {
     private ExecutorService executorService = Executors.newFixedThreadPool(6);
     private boolean isRunning = Boolean.TRUE;
     private boolean isSprinklerRunning = Boolean.FALSE;
+    private RedisDataService redisDataService;
 
     @JsonCreator
     public FieldSensor(@JsonProperty("id") String id, @JsonProperty("moisture") float moisture, @JsonProperty("temperature") float temperature, @JsonProperty("ph") float ph) {
         this.id = id;
         this.sensorData = new SensorData(temperature, moisture, ph);
+        RedisDaoImpl redisDao = new RedisDaoImpl();
+        SensorRepo sensorRepo = new SensorRepo();
+        redisDataService = new RedisDataServiceImpl(redisDao, sensorRepo);
         executorService.execute(new TempChanger());
         executorService.execute(new MoistureChanger());
         executorService.execute(new PhChanger());
@@ -172,7 +181,11 @@ public class FieldSensor {
                 }
                 try {
                     if (sensorDataList.size() > 0) {
-                        System.out.println(objectMapper.writeValueAsString(new SensorData(get_avg_temp(sensorDataList), get_avg_moisture(sensorDataList), get_avg_ph(sensorDataList))));
+                        SensorData sensorData = new SensorData(get_avg_temp(sensorDataList), get_avg_moisture(sensorDataList), get_avg_ph(sensorDataList));
+                        System.out.println(objectMapper.writeValueAsString(sensorData));
+                        redisDataService.dumpData(Integer.parseInt(id), SensorType.MOISTURE, sensorData.getMoisture());
+                        redisDataService.dumpData(Integer.parseInt(id), SensorType.TEMPRATURE, sensorData.getTemparature());
+                        redisDataService.dumpData(Integer.parseInt(id), SensorType.PH, sensorData.getPh());
                     }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();

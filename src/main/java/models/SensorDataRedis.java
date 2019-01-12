@@ -1,6 +1,8 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import constants.SensorType;
+import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,7 @@ public class SensorDataRedis {
   private static final String LOW_ALERT_COLOR = "yellow";
   private static final String HIGH_ALERT_COLOR = "red";
   private static final String NORMAL_COLOR = "green";
+
   private Float temparature;
   private String temparatureColor;
   private Float moisture;
@@ -23,6 +26,27 @@ public class SensorDataRedis {
   private Float height;
   private String heightColor;
   private Boolean action;
+
+  public SensorDataRedis(Map<String, String> sourceMap){
+    System.out.println(sourceMap);
+
+    if(sourceMap.get(SensorType.HEIGHT.name()) != null){
+      this.height = Float.parseFloat(sourceMap.get(SensorType.HEIGHT.name()));
+    }
+    if(sourceMap.get(SensorType.TEMPRATURE.name()) != null){
+      System.out.println("temprature"+sourceMap.get(SensorType.TEMPRATURE.name()));
+      this.temparature = Float.parseFloat(sourceMap.get(SensorType.TEMPRATURE.name()));
+    }
+    if(sourceMap.get(SensorType.NDVI.name()) != null){
+      this.ndvi = Float.parseFloat(sourceMap.get(SensorType.NDVI.name()));
+    }
+    if(sourceMap.get(SensorType.MOISTURE.name()) != null){
+      this.moisture = Float.parseFloat(sourceMap.get(SensorType.MOISTURE.name()));
+    }
+    if(sourceMap.get(SensorType.PH.name()) != null){
+      this.ph = Float.parseFloat(sourceMap.get(SensorType.PH.name()));
+    }
+  }
 
   public void updateColours() {
     if(temparature == null)

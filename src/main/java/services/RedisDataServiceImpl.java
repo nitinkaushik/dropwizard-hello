@@ -38,7 +38,8 @@ public class RedisDataServiceImpl implements RedisDataService {
     for(int i=0;i<maps.size();i++){
       SensorDataRedis sensorDataRedis;
       try {
-        sensorDataRedis = objectMapper.convertValue(maps.get(i), SensorDataRedis.class);
+        System.out.println("ith map data"+maps.get(i));
+        sensorDataRedis = new SensorDataRedis(maps.get(i));
       }catch (Exception e){
         sensorDataRedis = new SensorDataRedis();
       }
