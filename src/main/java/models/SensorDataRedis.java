@@ -3,11 +3,13 @@ package models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import constants.SensorType;
 import java.util.Map;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class SensorDataRedis {
 
   private static final String DANGER_COLOR = "red";
