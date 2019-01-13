@@ -24,6 +24,7 @@ public class RedisDaoImpl {
   }
 
   public void insert(Integer sensorId, SensorType sensorType, Float sensorData){
+    System.out.println("inserting into "+sensorId + " "+sensorType+ " "+sensorData);
     jedis.hset(sensorId.toString(), sensorType.toString(), sensorData.toString());
   }
 

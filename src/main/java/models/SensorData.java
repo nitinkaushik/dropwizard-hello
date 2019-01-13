@@ -12,7 +12,7 @@ public class SensorData {
     private float ph;
 
     @JsonCreator
-    public SensorData(@JsonProperty("temparature") float temparature, @JsonProperty("moisture") float moisture, @JsonProperty("ph") float ph) {
+    public SensorData(@JsonProperty("temperature") float temparature, @JsonProperty("moisture") float moisture, @JsonProperty("ph") float ph) {
         this.temparature = temparature;
         this.moisture = moisture;
         this.ph = ph;

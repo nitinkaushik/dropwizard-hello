@@ -1,6 +1,8 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import constants.SensorType;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -13,12 +15,12 @@ import lombok.NoArgsConstructor;
 public class SensorDataRedis {
 
   private static final String DANGER_COLOR = "red";
-  private static final String LOW_ALERT_COLOR = "yellow";
-  private static final String HIGH_ALERT_COLOR = "red";
+  private static final String LOW_ALERT_COLOR = "yellowgreen";
+  private static final String HIGH_ALERT_COLOR = "darkolivegreen";
   private static final String NORMAL_COLOR = "green";
 
-  private Float temparature;
-  private String temparatureColor;
+  private Float temperature;
+  private String temperatureColor;
   private Float moisture;
   private String moistureColor;
   private Float ph;
@@ -27,7 +29,7 @@ public class SensorDataRedis {
   private String ndviColor;
   private Float height;
   private String heightColor;
-  private Boolean action;
+  private Boolean active;
 
   public SensorDataRedis(Map<String, String> sourceMap){
     System.out.println(sourceMap);
@@ -36,8 +38,8 @@ public class SensorDataRedis {
       this.height = Float.parseFloat(sourceMap.get(SensorType.HEIGHT.name()));
     }
     if(sourceMap.get(SensorType.TEMPRATURE.name()) != null){
-      System.out.println("temprature"+sourceMap.get(SensorType.TEMPRATURE.name()));
-      this.temparature = Float.parseFloat(sourceMap.get(SensorType.TEMPRATURE.name()));
+      System.out.println("temperature"+sourceMap.get(SensorType.TEMPRATURE.name()));
+      this.temperature = Float.parseFloat(sourceMap.get(SensorType.TEMPRATURE.name()));
     }
     if(sourceMap.get(SensorType.NDVI.name()) != null){
       this.ndvi = Float.parseFloat(sourceMap.get(SensorType.NDVI.name()));
@@ -48,17 +50,23 @@ public class SensorDataRedis {
     if(sourceMap.get(SensorType.PH.name()) != null){
       this.ph = Float.parseFloat(sourceMap.get(SensorType.PH.name()));
     }
+    if(sourceMap.get(SensorType.active.name()) != null && Float.parseFloat(sourceMap.get(SensorType.active.name())) > 0.0F){
+      this.active = true;
+    }
   }
 
   public void updateColours() {
-    if(temparature == null)
-      temparatureColor = DANGER_COLOR;
-    else if(temparature < 20 )
-      temparatureColor = LOW_ALERT_COLOR;
-    else if(temparature > 40)
-      temparatureColor = HIGH_ALERT_COLOR;
+    moisture = Math.max(10, moisture);
+    ndvi = (float) Math.random();
+    height = (float) Math.random()*5;
+    if(temperature == null)
+      temperatureColor = DANGER_COLOR;
+    else if(temperature < 20 )
+      temperatureColor = LOW_ALERT_COLOR;
+    else if(temperature > 40)
+      temperatureColor = HIGH_ALERT_COLOR;
     else
-      temparatureColor = NORMAL_COLOR;
+      temperatureColor = NORMAL_COLOR;
 
     if(moisture == null)
       moistureColor = DANGER_COLOR;
@@ -97,7 +105,7 @@ public class SensorDataRedis {
     else
       heightColor = NORMAL_COLOR;
 
-    if(action == null)
-      action = false;
+    if(active == null)
+      active = false;
   }
 }

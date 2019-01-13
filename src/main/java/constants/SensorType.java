@@ -6,5 +6,6 @@ public enum SensorType {
   NITROGEN,
   TEMPRATURE,
   NDVI,
-  HEIGHT
+  HEIGHT,
+  active
 }

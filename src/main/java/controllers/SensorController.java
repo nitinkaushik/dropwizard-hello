@@ -1,18 +1,30 @@
 package controllers;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import constants.SensorType;
+import dao.RedisDaoImpl;
 import io.dropwizard.jersey.PATCH;
 import models.FieldSensor;
 
 import javax.ws.rs.*;
 import java.util.HashMap;
 import java.util.Map;
+import sensorRepo.SensorRepo;
+import services.RedisDataService;
+import services.RedisDataServiceImpl;
 
 @Path("/sensor")
 public class SensorController {
     private Map<String, FieldSensor> sensorMap;
+    RedisDataService redisDataService;
 
     public SensorController() {
         sensorMap = new HashMap<>();
+        RedisDaoImpl redisDao = new RedisDaoImpl();
+        SensorRepo sensorRepo = new SensorRepo();
+        redisDataService = new RedisDataServiceImpl(redisDao, sensorRepo);
     }
 
     @POST
@@ -45,6 +57,7 @@ public class SensorController {
     public void turnOnSprinkler(@PathParam("id") String id) {
         if (sensorMap.get(id) != null) {
             sensorMap.get(id).setSprinklerRunning(Boolean.TRUE);
+            redisDataService.dumpData(Integer.parseInt(id), SensorType.active, 1.0F);
         }
     }
 
@@ -53,6 +66,7 @@ public class SensorController {
     public void turnOffSprinkler(@PathParam("id") String id) {
         if (sensorMap.get(id) != null) {
             sensorMap.get(id).setSprinklerRunning(Boolean.FALSE);
+            redisDataService.dumpData(Integer.parseInt(id), SensorType.active, 0.0F);
         }
     }
 
@@ -62,6 +76,19 @@ public class SensorController {
         if (sensorMap.get(id) != null) {
             sensorMap.get(id).stop();
             sensorMap.remove(id);
+        }
+    }
+
+    @GET
+    @Path("/stress")
+    public void stress() {
+        try {
+            HttpResponse<String> unirestCall = Unirest.post("https://www.fast2sms.com/dev/bulk?sender_id=FSTSMS&message=Your farm is under stress. Please visit cloudfarm.&language=english&route=p&numbers=9717721375")
+                .header("authorization", "xLZ7Mhj0CQ3pnUVrq58d4K2R9fmNksJeXlD1BSFoAYvy6aWGtcMBrJR4VIgiwmuhbXDNx5Qk7Snv6Ucp")
+                .asString();
+            System.out.println("unirest call response "+unirestCall.getBody());
+        } catch (UnirestException e) {
+            e.printStackTrace();
         }
     }
 }

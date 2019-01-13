@@ -1,6 +1,9 @@
 package services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import constants.EnumConstants;
 import constants.SensorType;
 import dao.RedisDaoImpl;
@@ -46,6 +49,7 @@ public class RedisDataServiceImpl implements RedisDataService {
       sensorDataRedis.updateColours();
       sensorDataRedisList.add(sensorDataRedis);
     }
+
     return sensorDataRedisList;
   }
 }
